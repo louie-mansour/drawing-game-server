@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+  app:
+    depends_on:
+      - db
+    build:
+      context: .
+      target: dev
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3001:3001"
+      - "9229:9229"
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: example
+      DB_DATABASE: drawing_game
+      DB_PORT: 5432
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: drawing_game
