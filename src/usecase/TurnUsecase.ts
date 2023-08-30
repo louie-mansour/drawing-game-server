@@ -1,11 +1,9 @@
-import { DrawingPart } from "../models/FinishedDrawingPart";
-import { PostgresRepo } from "../repos/PostgresRepo";
+import { DrawingPart } from '../models/FinishedDrawingPart'
+import { PostgresRepo } from '../repos/PostgresRepo'
 
 export class TurnUsecase {
-    constructor(
-        private readonly postgresRepo: PostgresRepo,
-    ) {}
-    public submitDrawingPart(drawingPart: DrawingPart) {
-        this.postgresRepo.upsertDrawingPart(drawingPart)
-    }
+  constructor(private readonly postgresRepo: PostgresRepo) {}
+  public async submitDrawingPart(drawingPart: DrawingPart) {
+    await this.postgresRepo.upsertDrawingPart(drawingPart)
+  }
 }

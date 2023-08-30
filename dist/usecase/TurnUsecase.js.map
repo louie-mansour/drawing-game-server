@@ -1,1 +1,0 @@
-{"version":3,"file":"TurnUsecase.js","sourceRoot":"","sources":["../../src/usecase/TurnUsecase.ts"],"names":[],"mappings":";;;AAGA,MAAa,WAAW;IACpB,YACqB,YAA0B;QAA1B,iBAAY,GAAZ,YAAY,CAAc;IAC5C,CAAC;IACG,iBAAiB,CAAC,WAAwB;QAC7C,IAAI,CAAC,YAAY,CAAC,iBAAiB,CAAC,WAAW,CAAC,CAAA;IACpD,CAAC;CACJ;AAPD,kCAOC"}

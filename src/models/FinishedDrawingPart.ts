@@ -1,14 +1,19 @@
-export class DrawingPart {
-    readonly base64Uri: string;
-    readonly ownerId: string;
+import {v4 as uuidv4} from 'uuid';
 
-    constructor(args: ConstructorParams) {
-        this.base64Uri = args.base64Image;
-        this.ownerId = args.ownerId;
-    }
+export class DrawingPart {
+  readonly base64Image: string
+  readonly ownerId: string
+  readonly uuid: string
+
+  constructor(args: ConstructorArgs) {
+    this.base64Image = args.base64Image
+    this.ownerId = args.ownerId
+    this.uuid = args.uuid ?? uuidv4()
+  }
 }
 
-interface ConstructorParams {
-    base64Image: string,
-    ownerId: string,
+interface ConstructorArgs {
+  base64Image: string
+  ownerId: string
+  uuid?: string
 }

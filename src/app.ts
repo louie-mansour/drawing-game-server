@@ -1,20 +1,23 @@
-import { Request, Response } from "express"
-import { AppFactory } from "./AppFactory"
+import { Request, Response } from 'express'
+import { AppFactory } from './AppFactory'
+import express from 'express'
+import bodyParser from 'body-parser'
 
-(async () => {
-  const express = require('express')
+;(async () => {
   const app = express()
   const port = 3001
+  app.use(bodyParser.json())
+
 
   const controllers = await AppFactory.buildApp()
 
-  app.get('/', (req: Request, res: Response) => {
-    console.log('hello')
-      res.send(200)
+  app.get('/health', (req: Request, res: Response) => {
+    return res.send(200)
   })
 
-  app.put('/drawing/submit', (req: Request, res: Response) => {
-      return controllers.turnController.submitDrawingPart(req, res)
+  app.put('/drawing/submit', async (req: Request, res: Response) => {
+    await controllers.turnController.submitDrawingPart(req, res)
+    return res.send(200)
   })
 
   app.listen(port, () => {
