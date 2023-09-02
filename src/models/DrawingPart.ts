@@ -1,4 +1,4 @@
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid'
 
 export class DrawingPart {
   readonly base64Image: string

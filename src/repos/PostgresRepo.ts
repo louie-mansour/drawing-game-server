@@ -1,6 +1,6 @@
 import { Pool } from 'pg'
 import { migrate } from 'postgres-migrations'
-import { DrawingPart } from '../models/FinishedDrawingPart'
+import { DrawingPart } from '../models/DrawingPart'
 
 export class PostgresRepo {
   private readonly pool: Pool
@@ -8,12 +8,30 @@ export class PostgresRepo {
     this.pool = new Pool(config)
   }
 
-  public async upsertDrawingPart(drawingPart: DrawingPart) {
+  public async upsertDrawingPart(drawingPart: DrawingPart): Promise<DrawingPart> {
     const currentDatetime = new Date()
-    await this.pool.query(`
+    await this.pool.query(
+      `
       INSERT INTO drawings (uuid, base64image, created_datetime, modified_datetime)
       VALUES ($1, $2, $3, $3);
-    `, [drawingPart.uuid, drawingPart.base64Image, currentDatetime])
+    `,
+      [drawingPart.uuid, drawingPart.base64Image, currentDatetime]
+    )
+    return drawingPart
+  }
+
+  public async getMostRecentDrawingPart(): Promise<DrawingPart> {
+    const res = await this.pool.query(`
+      SELECT * FROM drawings
+      ORDER BY created_datetime ASC
+      LIMIT 1;
+    `)
+    const record = res.rows[0]
+    return new DrawingPart({
+      base64Image: record.base64image,
+      ownerId: 'test',
+      uuid: record.uuid,
+    })
   }
 
   public async migratePostgres(migrationDirectory: string) {
