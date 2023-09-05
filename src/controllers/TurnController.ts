@@ -11,11 +11,23 @@ export class TurnController {
       ownerId: 'test',
     })
     const savedDrawingPart = await this.turnUsecase.submitDrawingPart(submittedDrawingPart)
-    return res.status(200).send({ drawing: savedDrawingPart })
+    return res.status(200).send({
+      drawing: {
+        base_64_image: savedDrawingPart.base64Image,
+        owner_id: savedDrawingPart.ownerId,
+        uuid: savedDrawingPart.uuid,
+      },
+    })
   }
 
   public async getPreviousDrawingPart(req: Request, res: Response): Promise<Response> {
     const drawingPart = await this.turnUsecase.getPreviousDrawingPart()
-    return res.status(200).send({ drawing: drawingPart })
+    return res.status(200).send({
+      drawing: {
+        base_64_image: drawingPart.base64Image,
+        owner_id: drawingPart.ownerId,
+        uuid: drawingPart.uuid,
+      },
+    })
   }
 }

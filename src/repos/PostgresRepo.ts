@@ -23,7 +23,7 @@ export class PostgresRepo {
   public async getMostRecentDrawingPart(): Promise<DrawingPart> {
     const res = await this.pool.query(`
       SELECT * FROM drawings
-      ORDER BY created_datetime ASC
+      ORDER BY created_datetime DESC
       LIMIT 1;
     `)
     const record = res.rows[0]

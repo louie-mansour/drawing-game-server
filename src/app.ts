@@ -3,6 +3,7 @@ import { AppFactory } from './AppFactory'
 import express from 'express'
 import bodyParser from 'body-parser'
 import { FallbackErrorHandler } from './controllers/FallbackErrorHandler'
+import { AuthMiddleware } from './middleware/AuthMiddleware'
 ;(async () => {
   const app = express()
   const port = 3001
@@ -15,7 +16,15 @@ import { FallbackErrorHandler } from './controllers/FallbackErrorHandler'
     return res.status(200).send()
   })
 
-  app.put('/drawing/submit', async (req: Request, res: Response) => {
+  app.put('/guest/login', (req: Request, res: Response) => {
+    try {
+      return controllers.userController.guestLogin(req, res)
+    } catch (e: unknown) {
+      fallbackErrorHandler.handle(res)
+    }
+  })
+
+  app.put('/drawing/submit', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
     try {
       return await controllers.turnController.submitDrawingPart(req, res)
     } catch (e: unknown) {
@@ -23,7 +32,7 @@ import { FallbackErrorHandler } from './controllers/FallbackErrorHandler'
     }
   })
 
-  app.get('/drawing/previous', async (req: Request, res: Response) => {
+  app.get('/drawing/previous', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
     try {
       return await controllers.turnController.getPreviousDrawingPart(req, res)
     } catch (e: unknown) {
