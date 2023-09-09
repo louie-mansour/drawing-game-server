@@ -1,30 +1,37 @@
-import jwt, { Jwt } from 'jsonwebtoken'
-import { GuestUser } from '../models/User'
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import { Player } from '../models/Player'
 
 export class Authentication {
-  public static createGuestAccessToken(guestUser: GuestUser): string {
+  public static createGuestAccessToken(player: Player): string {
     return jwt.sign(
       {
-        userUuid: guestUser.uuid,
-        username: guestUser.username,
+        username: player.username,
       },
       'secret',
       {
         algorithm: 'HS256',
         issuer: 'drawing-game',
         audience: 'drawing-game',
-        subject: guestUser.uuid,
+        subject: player.uuid,
       }
     )
   }
 
-  public static authenticate(bearerToken: string): Jwt {
-    return jwt.verify(bearerToken, 'secret', {
+  public static authenticate(bearerToken: string): Player {
+    const playerJwt = jwt.verify(bearerToken, 'secret', {
       algorithms: ['HS256'],
       complete: true,
       ignoreExpiration: true,
       issuer: 'drawing-game',
       audience: 'drawing-game',
+    })
+
+    const jwtPayload = playerJwt.payload as JwtPayload
+
+    return new Player({
+      username: jwtPayload.username,
+      uuid: jwtPayload.sub,
+      accessToken: bearerToken,
     })
   }
 }

@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { AppFactory } from './AppFactory'
 import express from 'express'
 import bodyParser from 'body-parser'
-import { FallbackErrorHandler } from './controllers/FallbackErrorHandler'
+import { FallbackErrorHandler } from './errors/FallbackErrorHandler'
 import { AuthMiddleware } from './middleware/AuthMiddleware'
 ;(async () => {
   const app = express()
@@ -18,25 +18,49 @@ import { AuthMiddleware } from './middleware/AuthMiddleware'
 
   app.put('/guest/login', (req: Request, res: Response) => {
     try {
-      return controllers.userController.guestLogin(req, res)
+      return controllers.playerController.guestLogin(req, res)
     } catch (e: unknown) {
-      fallbackErrorHandler.handle(res)
+      fallbackErrorHandler.handle(res, e)
     }
   })
 
-  app.put('/drawing/submit', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
+  app.get('/game/:uuid', async (req: Request, res: Response) => {
+    try {
+      return await controllers.gameController.get(req, res)
+    } catch (e: unknown) {
+      fallbackErrorHandler.handle(res, e)
+    }
+  })
+
+  app.put('/game/create', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
+    try {
+      return await controllers.gameController.create(req, res)
+    } catch (e: unknown) {
+      fallbackErrorHandler.handle(res, e)
+    }
+  })
+
+  app.put('/game/join', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
+    try {
+      return await controllers.gameController.join(req, res)
+    } catch (e: unknown) {
+      fallbackErrorHandler.handle(res, e)
+    }
+  })
+
+  app.put('/game/:game_uuid/drawing/submit', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
     try {
       return await controllers.turnController.submitDrawingPart(req, res)
     } catch (e: unknown) {
-      fallbackErrorHandler.handle(res)
+      fallbackErrorHandler.handle(res, e)
     }
   })
 
-  app.get('/drawing/previous', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
+  app.get('/game/:game_uuid/drawing/previous', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
     try {
       return await controllers.turnController.getPreviousDrawingPart(req, res)
     } catch (e: unknown) {
-      fallbackErrorHandler.handle(res)
+      fallbackErrorHandler.handle(res, e)
     }
   })
 

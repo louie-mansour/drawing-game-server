@@ -1,7 +1,7 @@
 FROM node as dev
 USER node
 WORKDIR /usr/src/app
-EXPOSE 300
+EXPOSE 3001
 EXPOSE 9229
 CMD [ "yarn", "dev" ]
 

@@ -1,8 +1,10 @@
 import { TurnController } from './controllers/TurnController'
-import { UserController } from './controllers/UserController'
+import { PlayerController as PlayerController } from './controllers/PlayerController'
 import { PostgresRepo } from './repos/PostgresRepo'
 import { TurnUsecase } from './usecase/TurnUsecase'
-import { UserUsecase } from './usecase/UserUsecase'
+import { PlayerUsecase as PlayerUsecase } from './usecase/PlayerUsecase'
+import { GameUsecase } from './usecase/GameUsecase'
+import { GameController } from './controllers/GameController'
 
 export class AppFactory {
   public static async buildApp() {
@@ -18,15 +20,18 @@ export class AppFactory {
 
     // Use Cases
     const turnUsecase = new TurnUsecase(postgresqlRepo)
-    const userUsecas = new UserUsecase()
+    const playerUsecase = new PlayerUsecase()
+    const gameUsecase = new GameUsecase(postgresqlRepo)
 
     // Controllers
     const turnController = new TurnController(turnUsecase)
-    const userController = new UserController(userUsecas)
+    const playerController = new PlayerController(playerUsecase)
+    const gameController = new GameController(gameUsecase)
 
     return {
       turnController,
-      userController,
+      playerController,
+      gameController,
     }
   }
 }
