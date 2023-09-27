@@ -18,7 +18,7 @@ export class GameUsecase {
     return await this.postgresRepo.addPlayerToGame(player, invite)
   }
 
-  public async get(gameUuid: string): Promise<Game> {
-    return await this.postgresRepo.getGame(gameUuid)
+  public async get(inviteId: string): Promise<Game> {
+    return await this.postgresRepo.getGame(inviteId)
   }
 }

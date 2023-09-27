@@ -7,6 +7,12 @@ interface ConstructorArgs {
   players: Player[]
   drawingParts: DrawingPart[]
   uuid?: string
+  state?: GameState
+}
+
+export enum GameState {
+  Lobby = 'Lobby',
+  DrawingInProgress = 'DrawingInProgress',
 }
 
 export class Game {
@@ -15,7 +21,7 @@ export class Game {
   readonly players: Player[]
   readonly drawingParts: DrawingPart[][]
   readonly uuid: string
-  private isTurnOrderShuffled: boolean
+  readonly state: GameState
 
   constructor(args: ConstructorArgs) {
     const uuid = args.uuid ?? uuidv4()
@@ -23,15 +29,24 @@ export class Game {
     this.uuid = uuid
     this.invite = uuid
     this.players = args.players
+    this.state = args.state ?? GameState.Lobby
     this.drawingParts = args.players.map((p) => {
       return args.drawingParts.filter((dp) => dp.drawingOwnerUuid === p.uuid)
     })
-    this.isTurnOrderShuffled = false
+  }
+
+  startGame(): Game {
+    return new Game({
+      ownerUuid: this.ownerUuid,
+      players: this.players,
+      drawingParts: this.drawingParts.flatMap((d) => d),
+      uuid: this.uuid,
+      state: this.state,
+    })
   }
 
   setTurnOrder(): Game {
     this.players.sort((_a, _b) => 0.5 - Math.random()) // eslint-disable-line @typescript-eslint/no-unused-vars
-    this.isTurnOrderShuffled = true
     return this
   }
 
@@ -50,9 +65,6 @@ export class Game {
   }
 
   getPreviousPartOfDrawing(player: Player): DrawingPart | null {
-    if (this.isTurnOrderShuffled) {
-      throw new Error('Cannot get previous part of drawing after turn order is shuffled')
-    }
     const numberOfCompletedTurns = this.drawingParts
       .flatMap((dp) => dp)
       .filter((dp) => dp.contributorUuid === player.uuid).length

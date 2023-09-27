@@ -24,7 +24,7 @@ import { AuthMiddleware } from './middleware/AuthMiddleware'
     }
   })
 
-  app.get('/game/:uuid', async (req: Request, res: Response) => {
+  app.get('/game/:inviteId', async (req: Request, res: Response) => {
     try {
       return await controllers.gameController.get(req, res)
     } catch (e: unknown) {
@@ -32,7 +32,7 @@ import { AuthMiddleware } from './middleware/AuthMiddleware'
     }
   })
 
-  app.put('/game/create', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
+  app.post('/game/create', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
     try {
       return await controllers.gameController.create(req, res)
     } catch (e: unknown) {

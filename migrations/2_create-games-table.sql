@@ -4,6 +4,7 @@ BEGIN;
         owner_uuid VARCHAR(50) NOT NULL,
         invite VARCHAR(50) NOT NULL,
         players JSONB NOT NULL,
+        state VARCHAR(50) NOT NULL,
         created_datetime TIMESTAMP NOT NULL,
         modified_datetime TIMESTAMP NOT NULL
     );

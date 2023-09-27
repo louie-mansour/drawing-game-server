@@ -23,11 +23,11 @@ export class PostgresRepo {
     const currentDatetime = new Date()
     const res = await this.pool.query(
       `
-      INSERT INTO games (uuid, owner_uuid, invite, players, created_datetime, modified_datetime)
-      VALUES ($1, $2, $3, $4, $5, $5)
+      INSERT INTO games (uuid, owner_uuid, invite, players, state, created_datetime, modified_datetime)
+      VALUES ($1, $2, $3, $4, $5, $6, $6)
       RETURNING *;
     `,
-      [game.uuid, game.ownerUuid, game.invite, JSON.stringify(game.players), currentDatetime]
+      [game.uuid, game.ownerUuid, game.invite, JSON.stringify(game.players), game.state, currentDatetime]
     )
     const record = res.rows[0]
     return this.toGame(record)
@@ -50,13 +50,13 @@ export class PostgresRepo {
     return this.toGame(record)
   }
 
-  public async getGame(gameUuid: string): Promise<Game> {
+  public async getGame(inviteId: string): Promise<Game> {
     const gameRes = await this.pool.query(
       `
       SELECT * FROM games
-      WHERE uuid = $1;
+      WHERE invite = $1;
     `,
-      [gameUuid]
+      [inviteId]
     )
     const gameRecord = gameRes.rows[0]
 
@@ -65,7 +65,7 @@ export class PostgresRepo {
       SELECT * FROM drawing_parts
       WHERE game_uuid = $1
     `,
-      [gameUuid]
+      [gameRecord.uuid]
     )
     const drawingPartRecords = drawingPartsRes.rows
     return this.toGame(gameRecord, drawingPartRecords)
@@ -122,6 +122,7 @@ export class PostgresRepo {
       players: gameRecord.players.map((p: object) => {
         return this.toPlayer(p)
       }),
+      state: gameRecord.state,
       drawingParts: drawingParts,
       uuid: gameRecord.uuid,
     })

@@ -34,7 +34,7 @@ describe('TurnController', () => {
       })
       const gameOwnerAccessToken = Authentication.createGuestAccessToken(gameOwner)
 
-      const createGameRes = await axiosClient.put('/game/create', undefined, {
+      const createGameRes = await axiosClient.post('/game/create', undefined, {
         headers: {
           Authorization: `bearer ${gameOwnerAccessToken}`,
         },
@@ -92,7 +92,7 @@ describe('TurnController', () => {
       })
       const gameOwnerAccessToken = Authentication.createGuestAccessToken(gameOwner)
 
-      const createGameRes = await axiosClient.put('/game/create', undefined, {
+      const createGameRes = await axiosClient.post('/game/create', undefined, {
         headers: {
           Authorization: `bearer ${gameOwnerAccessToken}`,
         },

@@ -1,6 +1,7 @@
 import { describe, expect, test } from '@jest/globals'
 import axios, { AxiosError, isAxiosError } from 'axios'
 import { Authentication } from '../middleware/Authentication'
+import { GameState } from '../models/Game'
 import { Player } from '../models/Player'
 import { PostgresRepo } from '../repos/PostgresRepo'
 
@@ -25,7 +26,7 @@ describe('GameController', () => {
     test('requires permission to create a game', async () => {
       let res: any
       try {
-        await axiosClient.put('/game/create')
+        await axiosClient.post('/game/create')
       } catch (e) {
         res = e
       }
@@ -33,7 +34,7 @@ describe('GameController', () => {
     })
 
     test('creates a new game', async () => {
-      const res = await axiosClient.put('/game/create', undefined, {
+      const res = await axiosClient.post('/game/create', undefined, {
         headers: {
           Authorization: `bearer ${validAccessToken}`,
         },
@@ -48,6 +49,7 @@ describe('GameController', () => {
       expect(game.uuid).toBe(gameResponse.uuid)
       expect(game.invite).toBe(gameResponse.invite)
       expect(game.ownerUuid).toBe(player.uuid)
+      expect(game.state).toBe(GameState.Lobby)
       expect(game.players).toEqual([player])
     })
   })
@@ -97,7 +99,7 @@ describe('GameController', () => {
       })
       const gameOwnerAccessToken = Authentication.createGuestAccessToken(gameOwner)
 
-      const createGameRes = await axiosClient.put('/game/create', undefined, {
+      const createGameRes = await axiosClient.post('/game/create', undefined, {
         headers: {
           Authorization: `bearer ${gameOwnerAccessToken}`,
         },
@@ -121,12 +123,14 @@ describe('GameController', () => {
       expect(joinResponse.uuid).toBeDefined()
       expect(joinResponse.invite).toBeDefined()
       expect(joinResponse.players).toEqual([gameOwner, player])
+      expect(joinResponse.state).toBe(GameState.Lobby)
 
       const game = await postgresRepo.getGame(joinResponse.uuid)
       expect(game.uuid).toBe(joinResponse.uuid)
       expect(game.invite).toBe(joinResponse.invite)
       expect(game.ownerUuid).toBe(gameOwner.uuid)
       expect(game.players).toEqual([gameOwner, player])
+      expect(game.state).toBe(GameState.Lobby)
     })
   })
 })

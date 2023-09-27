@@ -7,6 +7,7 @@ interface GameDto {
   uuid: string
   invite: string
   owner_uuid: string
+  state: string
   players: PlayerDto[]
 }
 
@@ -29,7 +30,7 @@ export class GameController {
   }
 
   public async get(req: Request, res: Response): Promise<Response> {
-    const game = await this.gameUsecase.get(req.params.uuid)
+    const game = await this.gameUsecase.get(req.params.inviteId)
     return res.status(200).send(this.toResponse(game))
   }
 
@@ -46,6 +47,7 @@ export class GameController {
         uuid: game.uuid,
         invite: game.invite,
         owner_uuid: game.ownerUuid,
+        state: game.state,
         players: playerDtos,
       },
     }
