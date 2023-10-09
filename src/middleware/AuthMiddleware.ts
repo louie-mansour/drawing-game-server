@@ -3,8 +3,8 @@ import { Player } from '../models/Player'
 import { Authentication } from './Authentication'
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
-    // eslint-disable-line @typescript-eslint/no-namespace
     export interface Request {
       player?: Player
     }

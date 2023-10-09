@@ -19,12 +19,14 @@ export class PostgresRepo {
     this.pool = new Pool(config)
   }
 
-  public async saveGame(game: Game): Promise<Game> {
+  public async upsertGame(game: Game): Promise<Game> {
     const currentDatetime = new Date()
     const res = await this.pool.query(
       `
       INSERT INTO games (uuid, owner_uuid, invite, players, state, created_datetime, modified_datetime)
       VALUES ($1, $2, $3, $4, $5, $6, $6)
+      ON CONFLICT (uuid)
+      DO UPDATE SET players = EXCLUDED.players
       RETURNING *;
     `,
       [game.uuid, game.ownerUuid, game.invite, JSON.stringify(game.players), game.state, currentDatetime]
@@ -119,9 +121,11 @@ export class PostgresRepo {
 
     return new Game({
       ownerUuid: gameRecord.owner_uuid,
-      players: gameRecord.players.map((p: object) => {
-        return this.toPlayer(p)
-      }),
+      players: gameRecord.players
+        .map((p: object) => {
+          return this.toPlayer(p)
+        })
+        .filter((p: Player) => p.isActive()),
       state: gameRecord.state,
       drawingParts: drawingParts,
       uuid: gameRecord.uuid,
@@ -132,6 +136,7 @@ export class PostgresRepo {
     return new Player({
       uuid: input.uuid,
       username: input.username,
+      isReady: input.isReady,
     })
   }
 }

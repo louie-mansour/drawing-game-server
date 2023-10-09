@@ -11,7 +11,7 @@ export class GameUsecase {
       players: [owner],
       drawingParts: [],
     })
-    return await this.postgresRepo.saveGame(game)
+    return await this.postgresRepo.upsertGame(game)
   }
 
   public async join(player: Player, invite: string): Promise<Game> {
@@ -20,5 +20,10 @@ export class GameUsecase {
 
   public async get(inviteId: string): Promise<Game> {
     return await this.postgresRepo.getGame(inviteId)
+  }
+
+  public async playerReady(player: Player, inviteId: string): Promise<Game> {
+    const game = await this.postgresRepo.getGame(inviteId)
+    return await this.postgresRepo.upsertGame(game.updatePlayer(player.setReady()))
   }
 }

@@ -45,6 +45,20 @@ export class Game {
     })
   }
 
+  updatePlayer(player: Player) {
+    const players = this.players
+    const playerIdx = players.findIndex((p: Player) => p.uuid === player.uuid)
+    players[playerIdx] = player
+
+    return new Game({
+      ownerUuid: this.ownerUuid,
+      players: players,
+      drawingParts: this.drawingParts.flatMap((d) => d),
+      uuid: this.uuid,
+      state: this.state,
+    })
+  }
+
   setTurnOrder(): Game {
     this.players.sort((_a, _b) => 0.5 - Math.random()) // eslint-disable-line @typescript-eslint/no-unused-vars
     return this

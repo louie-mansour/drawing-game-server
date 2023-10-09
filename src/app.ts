@@ -48,6 +48,14 @@ import { AuthMiddleware } from './middleware/AuthMiddleware'
     }
   })
 
+  app.put('/game/player-ready', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
+    try {
+      return await controllers.gameController.playerReady(req, res)
+    } catch (e: unknown) {
+      fallbackErrorHandler.handle(res, e)
+    }
+  })
+
   app.put('/game/:game_uuid/drawing/submit', AuthMiddleware.authenticate, async (req: Request, res: Response) => {
     try {
       return await controllers.turnController.submitDrawingPart(req, res)
