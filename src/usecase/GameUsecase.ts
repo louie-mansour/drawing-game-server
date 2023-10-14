@@ -15,6 +15,15 @@ export class GameUsecase {
   }
 
   public async join(player: Player, invite: string): Promise<Game> {
+    // TODO: concurrency issue here - something to fix
+    const game = await this.postgresRepo.getGame(invite)
+    if (
+      game.players.find((p: Player) => {
+        p.uuid === player.uuid
+      })
+    ) {
+      return game
+    }
     return await this.postgresRepo.addPlayerToGame(player, invite)
   }
 
