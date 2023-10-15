@@ -1,3 +1,4 @@
+import { GameError } from '../errors/GameError'
 import { Game } from '../models/Game'
 import { Player } from '../models/Player'
 import { PostgresRepo } from '../repos/PostgresRepo'
@@ -34,5 +35,20 @@ export class GameUsecase {
   public async playerReady(player: Player, inviteId: string): Promise<Game> {
     const game = await this.postgresRepo.getGame(inviteId)
     return await this.postgresRepo.upsertGame(game.updatePlayer(player.setReady()))
+  }
+
+  public async start(player: Player, inviteId: string): Promise<Game> {
+    const game = await this.postgresRepo.getGame(inviteId)
+    if (player.uuid !== game.ownerUuid) {
+      throw new GameError(`Player(uuid=${player.uuid}) cannot start Game(invite=${inviteId}), they are not the owner`)
+    }
+    if (
+      !game.players.every((p: Player) => {
+        return p.isReady
+      })
+    ) {
+      throw new GameError(`Cannot start Game(invite=${inviteId}), not every player is ready`)
+    }
+    return await this.postgresRepo.startGame(inviteId)
   }
 }

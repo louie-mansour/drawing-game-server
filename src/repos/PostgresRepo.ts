@@ -2,7 +2,7 @@ import { Pool, QueryResultRow } from 'pg'
 import { migrate } from 'postgres-migrations'
 import { GameDoesNotExistError } from '../errors/GameDoesNotExistError'
 import { DrawingPart } from '../models/DrawingPart'
-import { Game } from '../models/Game'
+import { Game, GameState } from '../models/Game'
 import { Player } from '../models/Player'
 
 interface PostgresConfig {
@@ -47,6 +47,23 @@ export class PostgresRepo {
     )
     if (res.rows.length === 0) {
       throw new GameDoesNotExistError(`Invite ${invite} does not match any known game`)
+    }
+    const record = res.rows[0]
+    return this.toGame(record)
+  }
+
+  public async startGame(invite: string): Promise<Game> {
+    const currentDatetime = new Date()
+    const res = await this.pool.query(
+      `
+      UPDATE games SET state = $1, modified_datetime = $2
+      WHERE invite = $3 AND state = $4
+      RETURNING *;
+    `,
+      [GameState.DrawingInProgress, currentDatetime, invite, GameState.Lobby]
+    )
+    if (res.rows.length === 0) {
+      throw new GameDoesNotExistError(`Invite ${invite} does not match any known game in status ${GameState.Lobby}`)
     }
     const record = res.rows[0]
     return this.toGame(record)
