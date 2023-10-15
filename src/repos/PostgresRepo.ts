@@ -90,6 +90,27 @@ export class PostgresRepo {
     return this.toGame(gameRecord, drawingPartRecords)
   }
 
+  public async getGameByUuid(gameUuid: string): Promise<Game> {
+    const gameRes = await this.pool.query(
+      `
+      SELECT * FROM games
+      WHERE uuid = $1;
+    `,
+      [gameUuid]
+    )
+    const gameRecord = gameRes.rows[0]
+
+    const drawingPartsRes = await this.pool.query(
+      `
+      SELECT * FROM drawing_parts
+      WHERE game_uuid = $1
+    `,
+      [gameRecord.uuid]
+    )
+    const drawingPartRecords = drawingPartsRes.rows
+    return this.toGame(gameRecord, drawingPartRecords)
+  }
+
   public async insertDrawingPart(drawingPart: DrawingPart): Promise<DrawingPart> {
     const currentDatetime = new Date()
     const res = await this.pool.query(

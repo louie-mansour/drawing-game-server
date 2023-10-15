@@ -6,7 +6,7 @@ export class TurnUsecase {
   constructor(private readonly postgresRepo: PostgresRepo) {}
 
   public async submitDrawingPart(drawingPart: DrawingPart, player: Player): Promise<DrawingPart> {
-    const game = await this.postgresRepo.getGame(drawingPart.gameUuid)
+    const game = await this.postgresRepo.getGameByUuid(drawingPart.gameUuid)
     const owner = game.getDrawingOwnerOfContribution(player)
     const drawingPartWithOwner = drawingPart.setOwner(owner)
     return await this.postgresRepo.insertDrawingPart(drawingPartWithOwner)

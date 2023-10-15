@@ -30,7 +30,7 @@ export class TurnController {
   private toDrawingPart(req: Request): DrawingPart {
     return new DrawingPart({
       base64Image: req.body.drawing_part.base_64_image,
-      gameUuid: req.body.drawing_part.game_uuid,
+      gameUuid: req.params.game_uuid,
       contributorUuid: req.player!.uuid!,
     })
   }
