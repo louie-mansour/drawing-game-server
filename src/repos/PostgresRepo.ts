@@ -79,6 +79,9 @@ export class PostgresRepo {
     )
     const gameRecord = gameRes.rows[0]
 
+    if (!gameRecord) {
+      throw new GameDoesNotExistError(`Game with invite ${inviteId} does not exist`)
+    }
     const drawingPartsRes = await this.pool.query(
       `
       SELECT * FROM drawing_parts
